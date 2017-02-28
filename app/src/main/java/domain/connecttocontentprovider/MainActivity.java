@@ -1,16 +1,10 @@
 package domain.connecttocontentprovider;
 
-import android.app.Activity;
 import android.content.ContentProviderClient;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.net.Uri;
-import android.provider.ContactsContract;
 import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.LoaderManager;
-import android.support.v4.content.CursorLoader;
-import android.support.v4.content.Loader;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -33,7 +27,6 @@ public class MainActivity extends FragmentActivity {
     ContentProviderClient contentProviderClient;
 
     String[] projection = {"_id", "subject", "content"};
-    private ArrayList<Note> notesArrayList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,18 +63,18 @@ public class MainActivity extends FragmentActivity {
     }
 
     private void getAllNotes() {
+        Cursor cursor;
         try {
-            Cursor cursor = contentProviderClient.query(CONTENT_URI, projection, null, null, null);
+            cursor = contentProviderClient.query(CONTENT_URI, projection, null, null, null);
 
             if (cursor != null && cursor.getCount() > 0) {
-                notesArrayList = new ArrayList<>();
                 Note receivedNote;
                 Log.v(MainActivity.class.getName(), "_______NOTES TABLE_______");
                 while (cursor.moveToNext()) {
                     receivedNote = new Note(Long.parseLong(cursor.getString(0)), cursor.getString(1), cursor.getString(2));
                     Log.v(MainActivity.class.getName(), receivedNote.getId() + " " + receivedNote.getSubject() + " " + receivedNote.getContent());
-                    notesArrayList.add(receivedNote);
                 }
+                cursor.close();
                 Log.v(MainActivity.class.getName(), "_________________________");
             } else {
                 Log.v(MainActivity.class.getName(), "Cursor is null or empty");
